@@ -11,6 +11,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	seg 
 	org $F000
+
 Reset:
 	CLEAN_START
         
@@ -28,6 +29,9 @@ Reset:
 
 	lda #$C6
 	sta COLUP1
+
+	ldy #%00000010
+	sty CTRLPF
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start a new frame by configuring VBLANK and VSYNC
@@ -85,6 +89,22 @@ ScoreboardLoop:
     REPEAT 50
         sta WSYNC
     REPEND
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Display 10 scanlines for the Player 0 graphics.
+;; Pulls data from an array of bytes defined at PlayerBitmap
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	ldy #0
+Player0Loop:
+	lda PlayerBitmap,Y
+	sta GRP0
+	sta WSYNC
+	iny
+	cpy #10
+	bne Player0Loop
+
+	lda #0
+	sta GRP0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Display 10 scanlines for the Player 1 graphics.
